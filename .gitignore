@@ -1,0 +1,14 @@
+# Ignore all LaTeX output
+*.dvi
+*.pdf
+*.ps
+*.aux
+*.bbl
+*.lof
+*.log
+*.out
+*.toc
+
+# Ignore Emacs backups
+*~
+\#*\#
