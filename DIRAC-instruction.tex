@@ -1,0 +1,374 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage[section]{placeins}
+
+\addtolength{\textheight}{1cm}
+\addtolength{\voffset}{-1cm}
+\addtolength{\textwidth}{2cm}
+\addtolength{\hoffset}{-1cm}
+
+\graphicspath{{figs/}}
+\newcommand{\etd}{EISCAT\_3D}
+
+\title{Prototype DIRAC portal for EISCAT data --- Short instruction}
+\author{Carl-Fredrik Enell}
+
+\begin{document}
+\maketitle{}
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{DIRAC}
+\label{sec:dirac}
+
+EGI, first European Grid Initiative, later European Grid
+Infrastructure, and now simply EGI, \url{http://www.egi.eu}, is an
+organisation sited in Amsterdam that federates access to computing and
+storage facilities in Europe. The H2020 EINFRA-1-2014 project
+EGI-Engage supports a number of competence centres (CC), one of which
+is the CC for \etd{}.
+
+The \etd{} CC aims at developing the \etd{} user portal, which is to be the
+primary interface through which users will browse, download and
+analyse \etd{} data.  We are investigating several options and have
+chosen to work closely with the developers of the Distributed
+Infrastructure with Remote Agent Control (DIRAC) project,
+\url{http://diracgrid.org}, which was originally developed for
+distributing data from the LHCb project at CERN. DIRAC is an
+interware, mostly written in Python, that provides command-line, web
+and API interfaces to grid computing and storage resources. A major
+task in the \etd{} CC has been to implement a prototype DIRAC portal
+for legacy EISCAT data from the years 2007 (IPY) and 2014 through
+2016.
+
+\subsection{Layout of the EISCAT DIRAC service}
+\label{sec:eiscat-dirac}
+
+ 
+The present prototype EISCAT DIRAC portal comprises the required
+functions for authenticated users to download standard correlated
+data, archived in Matlab-compatible format, and to submit selected
+data to the EISCAT real time graph (RTG) plotting software through the
+job management system. Specifically, the prototype DIRAC service
+consists of:
+
+\begin{description}
+
+\item[Virtual organisation membership service (VOMS)] User access to the
+  EISCAT DIRAC portal is managed through membership in groups in the
+  EGI virtual organisation (VO) \textbf{eiscat.se}.  
+
+  The VOMS used by EGI is called Perun and runs
+  at Cesnet, accessible to VOMS managers through a web GUI at
+  \url{https://perun.cesnet.cz}
+
+\item[Storage element] This is a Python program that runs on a
+  dedicated port on a Linux computer at EISCAT Headquarters. It reads
+  and serves data files from a top level directory, where the 2007 and
+  2013--2017 data directories are linked from the actual storage.
+
+\item[File catalogue] This database runs on EGI resources at Cyfronet
+  (\url{http://www.cyfronet.krakow.pl}) and allows users
+  to list and search the data with a command-line client and the file
+  catalogue application in the web portal.  
+
+  It is updated by a Python script that runs monthly (from cron) on
+  the DIRAC server at EISCAT Headquarters.
+
+\item[Web interface] A web interface is the main point of access for
+  users. It also runs at Cyfronet and is accessible at
+  \url{https://dirac.egi.eu:9443/DIRAC/}. 
+
+  This web interface presents the user with a desktop
+  (Fig.~\ref{fig:portal}) that looks much like the desktop of any
+  modern computer environment\footnote{Well, it looks like an old version of MS Windows}.  It has applications for file catalogue
+  search, job submission, and more.
+
+\end{description}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-desktop}
+  \caption{The DIRAC web GUI}
+  \label{fig:portal}
+\end{figure}
+
+\section{Getting access to the DIRAC portal}
+\label{sec:access}
+
+Access to data in DIRAC requires authentication with X.509
+certificates. This has proven to be a difficult hurdle for most users
+to overcome. For typical EISCAT users the procedure described below
+should work.
+
+\begin{enumerate}
+
+
+\item Log in to your certificate authority. At least for EISCAT users
+  in the Nordic region, this is usually Digicert. Browse to
+  \url{https://www.digicert.com/sso/} using a compliant
+  browser. Firefox, MS Internet Explorer and Safari should all work,
+  but to my best experience Google Chrome and MS Edge are not compatible. 
+
+  On the first page shown you will have to type in the name of your
+  identity provider, i.e. your university or
+  institute. Fig.~\ref{fig:idp} shows what this looks like for the
+  author, whose identity provider is the Swedish Institute of Space
+  Physics. This will redirect you to a login page where you should be
+  able to log in with the user credentials of your organisation. In
+  many cases this will be the same name and password that you use for
+  your university email and internal web pages.
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{idp-provider}
+    \caption{Providing the Identity Provider information to Digicert. Type the name of your provider (such as University of X). This figure shows the author typing in his identity provider, which is the Swedish Institute of Space Physics for Eiscat HQ staff.}
+    \label{fig:idp}
+  \end{figure}
+
+\item Request a Grid Premium certificate by selecting this in the
+  Product menu and clicking \emph{Request certificate}, as in
+  Fig.~\ref{fig:digicert}.  Depending on your browser, the certificate
+  may be installed automatically as part of this step. If not, follow
+  the next step below.
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{digicert-request}
+    \caption{Requesting a Grid Premium certificate from Digicert.}
+    \label{fig:digicert}
+  \end{figure}
+
+\item If the Request procedure did not install the certificate
+  automatically in your browser, it can be downloaded by looking up
+  the new certificate in the list \emph{My certificates} and clicking
+  the download button. This will give you a zip archive with your
+  personal certificate together with a few other authority files. The
+  certificate file (called something like \texttt{yourname.crt}) can
+  then be imported.
+
+  Fig.~\ref{fig:cert-browser} shows the details of the author's
+  certificate after a successful import into Firefox.
+
+  \begin{figure}[htb]
+    \centering
+     \includegraphics[width=1.0\linewidth]{cert-firefox}
+    \caption{The certificate manager in Firefox (Edit $\rightarrow$ Preferences $\rightarrow$ Advanced $\rightarrow$ Certificates) after successfully importing a certificate from Digicert.}
+    \label{fig:cert-browser}
+  \end{figure}
+ 
+\item Register to the \textbf{eiscat.se} VO through the \emph{Perun}
+  service at
+  \url{https://perun.metacentrum.cz/cert/registrar/?vo=eiscat.se}. You
+  will have to enter required information and then wait for approval. Fig.~ shows a completed successful registration.
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{perun-reg}
+    \caption{Registration to the EGI VO \textbf{eiscat.se} through Perun.}
+    \label{fig:perun-reg}
+  \end{figure}
+
+
+\item Ask a VO manager (e.g. the author) to add your VO user to the
+  access groups that you are entitled to (usually your EISCAT
+  associate country and common programme data). Fig.~\ref{fig:perun}
+  shows how the author edits his own access groups and a similar
+  procedure must be performed for your account.
+
+\item Upload your certificate to the DIRAC proxy, which is the gateway
+  that allows you to access the DIRAC grid services. This is easiest
+  using the DIRAC command line tools. They are Python and UNIX (bash)
+  shell scripts. If you cannot install them, the GUI also provides a proxy upload applet.
+
+  \begin{figure}[htb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{dirac-gui-proxy}
+    \caption{Proxy upload through the web GUI}
+    \label{fig:proxygui}
+  \end{figure}
+  
+  \begin{itemize}
+  \item Install the DIRAC client tools. Refer to \url{http://diracgrid.org} for this procedure.
+  
+  \item Export your X.509 certificate in P12 format. The export
+    function of common web browsers is useful. This will ask you to
+    set a password for encryption.
+
+    
+  \item Option 1: Use the web GUI (see Fig.~\ref{fig:proxygui}) to upload your certificate to the proxy.
+    \begin{itemize}
+    \item Select the Proxy upload applet in the web GUI
+    \item Browse to  your p12 format certificate
+    \item Type in the password of the p12 certificate
+    \item Click Upload
+    \end{itemize}
+
+  \item Option 2: Use the DIRAC CLI to install the certificate for the DIRAC services and upload to the proxy: 
+
+\begin{verbatim}
+     dirac-cert-convert.sh <YOUR_CERTIFICATE>.p12
+     \end{verbatim}
+
+  \item Upload the certificate and initialise the DIRAC proxy:
+
+\begin{verbatim}
+      dirac-proxy-init -M -U -g eiscat_<GROUP>
+\end{verbatim}
+
+    for example:
+\begin{verbatim}
+      dirac-proxy-init -M -U -g eiscat_FI
+\end{verbatim}
+    
+    
+    You will be asked for the password of your certificate (the one you set in the export step above).
+    You can then check whether the upload succeeded like this:
+    \begin{verbatim}
+      dirac-proxy-get-uploaded-info 
+    \end{verbatim}
+
+    and you should then see something like
+  \end{itemize}
+
+
+\noindent
+{\tiny
+\begin{verbatim}
+Checking for DNs /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Carl-Fredrik Enell fredrik@irf.se
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| UserName | UserDN                                                                                         | UserGroup    | ExpirationTime      | PersistentFlag |
+----------------------------------------------------------------------------------------------------------------------------------------
+| cenell_1 | /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Carl-Fredrik Enell fredrik@irf.se | eiscat_SW    | 2017-06-25 11:54:59 | True           |
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+\end{verbatim}
+}%tiny
+
+\end{enumerate}
+
+
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{voms-groups-perun}
+  \caption{The Groups tab of the Perun VOMS GUI, showing access groups of the author. This registration will be handled by one of the VO managers so as a normal user you will not see this. It is important that you are a member of the appropriate VOMS group(s), however.}
+  \label{fig:perun}
+\end{figure}
+
+
+\section{Searching EISCAT data}
+\label{sec:searching}
+
+Once you have an installed certificate, VOMS group access, and an initialised DIRAC proxy, you can start using the web GUI.
+
+\begin{enumerate}
+\item Go to the prototype portal at \url{http://dirac.egi.eu:8090/DIRAC/}
+\item Select \texttt{Secure connection} at the \texttt{bottom right.} The browser may ask you to select certificate once or twice.
+\item Select your VOMS group at the bottom right, e.g. \texttt{eiscat\_FI}
+\item Go to the Windows style menu at the bottom left and browse to the file catalogue GUI. 
+\end{enumerate}
+
+\subsection{Basic search}
+\label{sec:searchdir}
+
+
+\begin{itemize}
+\item  The file catalogue GUI will look much like any file browser. The search will, however, start from a top level directory that you select by right-clicking on a directory in the listing (top right pane) and then clicking \texttt{Set as starting path} (See Fig.~\ref{fig:catalogue}). EISCAT data are in the directory hierarchy \texttt{eiscat.se/archive/<year>/}.
+\item After setting the starting path, additional search criteria can be added using the GUI in the top left pane. See Fig.~\ref{fig:search}. 
+\item Click Submit (below the bottom left pane). 
+\end{itemize}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-catalogue}
+  \caption{Selecting a top level directory in the file catalogue GUI}
+  \label{fig:catalogue}
+\end{figure}
+
+
+
+\label{sec:searching}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-search}
+  \caption{Adding metadata search criteria. In this particular case, the top level directory contains only SW UHF data, so the filters shown as an example on the top left will have no effect. After selecting the search criteria, click the Submit button}
+  \label{fig:search}
+\end{figure}
+
+
+The search will list any found files in the bottom right pane.  After
+finding the desired files, you can select files for download or
+processing in the bottom right pane.
+
+\section{Downloading EISCAT data}
+\label{sec:download}
+
+
+Files selected in the bottom right pane can be downloaded as a ZIP
+archive by clicking on the diskette icon, as shown in
+Fig.~\ref{fig:download}.
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-download}
+  \caption{Selecting files to download.}
+  \label{fig:download}
+\end{figure}
+
+\section{RTG plotting of EISCAT data files}
+\label{sec:rtg}
+
+The GUI can also submit processing jobs to the EGI grid. This procedure will usually
+
+\begin{enumerate}
+\item start a virtual machine on grid resources
+
+\item run the specified software with the selected files as input. At
+  this stage the standard EISCAT Real Time Graph (RTG) has been
+  implemented and will plot the content of the selected data files (by
+  running the RTG script on the open source Matlab-compatible software
+  Octave).
+
+\end{enumerate}
+
+The procedure is as follows
+\begin{enumerate}
+\item Select files as for download
+\item Click the green job launchpad icon above the file list
+\item The job launchpad GUI opens. Right-click on the \texttt{EISCAT png maker} directory icon and select \texttt{Apply to the selected parameters}. See Fig.~\ref{fig:submit}.
+The field \texttt{Executable} should now show the path to \texttt{webtg4dirac}.
+\item Check the other parameters as well and click Submit at the bottom of the job launchpad window.
+\item Go to the main menu and browse to the job monitor (Fig.~\ref{fig:monitor}). Make sure that your user name is preselected and click Submit to see the status of the job.
+\item Once the job is finished, the output will be in the Sandbox. Right-click on the job line to see the menu as in Fig.~\ref{fig:sandbox}.
+\end{enumerate}
+
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-jobsubm}
+  \caption{Submitting a job that will plot the selected EISCAT data files with RTG.}
+  \label{fig:submit}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-jobmon}
+  \caption{The DIRAC job monitor showing the status of the submitted job.}
+  \label{fig:monitor}
+\end{figure}
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=1.0\linewidth]{dirac-gui-job-get}
+  \caption{The sandbox contains the output files for download.}
+  \label{fig:sandbox}
+\end{figure}
+
+\section{Feedback}
+\label{sec:feedback}
+Feedback and bug reports through the EGI RT tracker system will be appreciated. EISCAT portal reports should be submitted through
+ \url{https://rt.egi.eu/rt/Search/Results.html?Query=Queue\%20\%3D\%20\%27dirac4egi-eiscat3d-requirements\%27\%20AND\%20(Status\%20\%3D\%20\%27new\%27\%20OR\%20Status\%20\%3D\%20\%27open\%27\%20OR\%20Status\%20\%3D\%20\%27accepted\%27\%20OR\%20Status\%20\%3D\%20\%27developed\%27\%20OR\%20Status\%20\%3D\%20\%27stalled\%27\%20OR\%20Status\%20\%3D\%20\%27feedback\%27)}.
+
+\end{document}
