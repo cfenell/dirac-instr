@@ -72,7 +72,7 @@ resources at CSC.
 \item[Storage element] Access to storage in DIRAC is handled by the storage element server. This is a Python program that runs on server at EISCAT Headquarters. It reads
   and serves data files from a top level directory, where presently data from 1981--1983, 2007 (IPY) and 2011--2019 are linked from the main storage server.
 
-\item[File catalogue] This is a database of files available on the storage element and their metadata.  It runs on EGI resources at Cyfronet
+\item[File catalogue] This is a database of files available on the storage element, and their metadata.  It runs on EGI resources at Cyfronet
   (\url{http://www.cyfronet.krakow.pl}) and allows users
   to list and search the data with a command-line client and the file
   catalogue application in the web portal.  
@@ -84,9 +84,8 @@ resources at CSC.
   users. It also runs at Cyfronet and is accessible at
   \url{https://dirac.egi.eu:9443/DIRAC/}. 
 
-  This web interface presents the user with a desktop
-  (Fig.~\ref{fig:portal}) that looks much like the desktop of any
-  modern computer environment\footnote{Well, it looks like an old version of MS Windows}.  It has applications for file catalogue
+  This web interface presents the user with a GUI environment
+  (Fig.~\ref{fig:portal}) which has applications for file catalogue
   search, job submission, and more.
 
 \end{description}
@@ -97,13 +96,26 @@ resources at CSC.
   \label{fig:portal}
 \end{figure}
 
-\section{Getting access to the DIRAC portal}
+\section{Accessing the \etd{} DIRAC portal}
 \label{sec:access}
 
-Access to data in DIRAC requires authentication. Two options are implemented: Certificate authentication and authentication with the EGI Checkin service.
-Certificate authentication is the most mature system and is described in the following.
+Access to data in DIRAC requires user authentication and access
+authorization through membership in one ore more groups in the Virtual
+Organisation (VO) eiscat.se.
 
 
+For user authentication two options are implemented: X.509 certificate authentication and authentication with the EGI Checkin service.
+Certificate authentication is the most mature system. However, it has turned out to be unknown to most EISCAT users and thus a detailed description follows. For instructions on EGI Checkin authentication, skip to Sect.~\ref{sec:checkin-auth} below.
+
+
+\subsection{Certificate authentication}
+\label{sec:cert-auth}
+
+
+\subsubsection{Get a certificate}
+\label{sec:get-certificate}
+
+Skip this section if you already have a Grid Premium type X.509 certificate. In this case it should be installed in your web browser and exportable from there.
 
 \begin{enumerate}
 
@@ -126,7 +138,7 @@ Certificate authentication is the most mature system and is described in the fol
   \begin{figure}[htb]
     \centering
     \includegraphics[width=1.0\linewidth]{idp-provider}
-    \caption{Providing the Identity Provider information to Digicert. Type the name of your provider (such as University of X). This figure shows the author typing in his identity provider, which is the Swedish Institute of Space Physics for Eiscat HQ staff.}
+    \caption{Providing the Identity Provider information to Digicert. Type the name of your provider (such as University of X). This figure shows the identity provider of the author, which is the Swedish Institute of Space Physics.}
     \label{fig:idp}
   \end{figure}
 
@@ -160,7 +172,14 @@ Certificate authentication is the most mature system and is described in the fol
     \caption{The certificate manager in Firefox (Edit $\rightarrow$ Preferences $\rightarrow$ Advanced $\rightarrow$ Certificates) after successfully importing a certificate from Digicert.}
     \label{fig:cert-browser}
   \end{figure}
- 
+
+\end{enumerate}
+
+\subsubsection{Register Virtual Organisation membership}
+\label{sec:regist-virt-organ}
+
+\begin{enumerate}
+  
 \item Register to the \textbf{eiscat.se} VO through the \emph{Perun}
   service at
   \url{https://perun.metacentrum.cz/cert/registrar/?vo=eiscat.se}. You
@@ -177,9 +196,17 @@ Certificate authentication is the most mature system and is described in the fol
 \item Ask a VO manager (e.g. the author) to add your VO user to the
   access groups that you are entitled to (usually your EISCAT
   associate country and common programme data). Fig.~\ref{fig:perun}
-  shows how the author edits his own access groups and a similar
+  shows the author editing access groups, and a similar
   procedure must be performed for your account.
 
+\end{enumerate}
+
+\subsubsection{Proxy upload}
+\label{sec:proxy-upload}
+
+
+\begin{enumerate}
+  
 \item Upload your certificate to the DIRAC proxy, which is the gateway
   that allows you to access the DIRAC grid services. This is easiest
   using the DIRAC command line tools. They are Python and UNIX (bash)
@@ -193,24 +220,23 @@ Certificate authentication is the most mature system and is described in the fol
   \end{figure}
   
   \begin{itemize}
-  \item Install the DIRAC client tools. Refer to \url{http://diracgrid.org} for this procedure.
   
-  \item Export your X.509 certificate in P12 format. The export
-    function of common web browsers is useful. This will ask you to
+  \item Export your certificate in p12 format. The export
+    function of your web browser should work. This will ask you to
     set a password for encryption.
 
     
   \item Option 1: Use the web GUI (see Fig.~\ref{fig:proxygui}) to upload your certificate to the proxy.
     \begin{itemize}
     \item Select the Proxy upload applet in the web GUI
-    \item Browse to  your p12 format certificate
+    \item Browse to your p12 format certificate
     \item Type in the password of the p12 certificate
     \item Click Upload
     \end{itemize}
 
-  \item Option 2: Use the DIRAC CLI to install the certificate for the DIRAC services and upload to the proxy: 
+  \item Option 2: Use the DIRAC CLI to install the certificate for the DIRAC services and upload to the proxy.  Refer to \url{http://diracgrid.org} for instructions on how to install the DIRAC client or run it in a Docker container.
 
-\begin{verbatim}
+    \begin{verbatim}
      dirac-cert-convert.sh <YOUR_CERTIFICATE>.p12
      \end{verbatim}
 
@@ -260,10 +286,17 @@ Checking for DNs /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Ca
 \end{figure}
 
 
+\subsection{EGI Checkin authentication}
+\label{sec:checkin-auth}
+
+Write me!
+
+
+
 \section{Searching EISCAT data}
 \label{sec:searching}
 
-Once you have an installed certificate, VOMS group access, and an initialised DIRAC proxy, you can start using the web GUI.
+Once authenticated you can start using the web GUI.
 
 \begin{enumerate}
 \item Go to the prototype portal at \url{http://dirac.egi.eu:8090/DIRAC/}
