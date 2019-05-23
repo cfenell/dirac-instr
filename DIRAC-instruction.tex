@@ -19,42 +19,45 @@
 \begin{document}
 \maketitle{}
 
-\section{Introduction}
+\section{Introduction and history}
 \label{sec:intro}
+
+EGI (\url{http://www.egi.eu}) is a federated e-Infrastructure set up
+to provide advanced computing services for research and innovation.
+The Horizon 2020 EINFRA-1-2014 project EGI-Engage supported a number
+of competence centres (CC) for research infrastructures. In this
+framework the CC for \etd{} started to develop a user data search and
+analysis portal for \etd{}. Services developed by EGI, as well as the
+related Horizon 2010 projects Indigo DataCloud and EUDAT
+\url{http://www.eudat.eu}, are now part of the European Open Science
+Cloud Hub (EOSC-Hub), \url{http://www.eosc-hub.eu}, a currently
+running project funded by the Horizon 2020 research and innovation
+programme under grant agreement No~777536.
+
+The development initiated in the EGI-Engage CC is continued in the EOSC-Hub CC for \etd{}. Partners are EISCAT HQ, Sweden, CNRS-IN2P3, France, and CSC in Finland.
 
 \subsection{DIRAC}
 \label{sec:dirac}
-
-EGI, first European Grid Initiative, later European Grid
-Infrastructure, and now simply EGI, \url{http://www.egi.eu}, is an
-organisation sited in Amsterdam that federates access to computing and
-storage facilities in Europe. The H2020 EINFRA-1-2014 project
-EGI-Engage supports a number of competence centres (CC), one of which
-is the CC for \etd{}.
-
-The \etd{} CC aims at developing the \etd{} user portal, which is to be the
-primary interface through which users will browse, download and
-analyse \etd{} data.  We are investigating several options and have
-chosen to work closely with the developers of the Distributed
-Infrastructure with Remote Agent Control (DIRAC) project,
-\url{http://diracgrid.org}, which was originally developed for
-distributing data from the LHCb project at CERN. DIRAC is an
-interware, mostly written in Python, that provides command-line, web
-and API interfaces to grid computing and storage resources. A major
-task in the \etd{} CC has been to implement a prototype DIRAC portal
-for legacy EISCAT data from the years 2007 (IPY) and 2014 through
-2016.
+The \etd{} competence centre aims at developing the \etd{} user
+portal, which is to be the primary interface through which users will
+browse, download and analyse \etd{} data.  We chose to work closely
+with the developers of the Distributed Infrastructure with Remote
+Agent Control (DIRAC) project, \url{http://diracgrid.org}, which was
+originally developed for distributing data from the LHCb project at
+CERN. DIRAC is an interware, mostly written in Python, that provides
+command-line, web and API interfaces to grid computing and storage
+resources. The major task of the \etd{} CC so far has been to
+implement a prototype DIRAC portal for legacy EISCAT data,
+i.e. archived lag profile data in Matlab format. These data are stored
+at EISCAT HQ and indexed in a MySQL database.
 
 \subsection{Layout of the EISCAT DIRAC service}
 \label{sec:eiscat-dirac}
 
  
-The present prototype EISCAT DIRAC portal comprises the required
-functions for authenticated users to download standard correlated
-data, archived in Matlab-compatible format, and to submit selected
-data to the EISCAT real time graph (RTG) plotting software through the
-job management system. Specifically, the prototype DIRAC service
-consists of:
+The prototype EISCAT DIRAC portal comprises the required functions for
+user authentication, data search, and job submission to computing
+resources at CSC.
 
 \begin{description}
 
@@ -66,17 +69,15 @@ consists of:
   at Cesnet, accessible to VOMS managers through a web GUI at
   \url{https://perun.cesnet.cz}
 
-\item[Storage element] This is a Python program that runs on a
-  dedicated port on a Linux computer at EISCAT Headquarters. It reads
-  and serves data files from a top level directory, where the 2007 and
-  2013--2017 data directories are linked from the actual storage.
+\item[Storage element] Access to storage in DIRAC is handled by the storage element server. This is a Python program that runs on server at EISCAT Headquarters. It reads
+  and serves data files from a top level directory, where presently data from 1981--1983, 2007 (IPY) and 2011--2019 are linked from the main storage server.
 
-\item[File catalogue] This database runs on EGI resources at Cyfronet
+\item[File catalogue] This is a database of files available on the storage element and their metadata.  It runs on EGI resources at Cyfronet
   (\url{http://www.cyfronet.krakow.pl}) and allows users
   to list and search the data with a command-line client and the file
   catalogue application in the web portal.  
 
-  It is updated by a Python script that runs monthly (from cron) on
+  The file catalogue is updated by a Python script that runs monthly (from cron) on
   the DIRAC server at EISCAT Headquarters.
 
 \item[Web interface] A web interface is the main point of access for
@@ -99,10 +100,10 @@ consists of:
 \section{Getting access to the DIRAC portal}
 \label{sec:access}
 
-Access to data in DIRAC requires authentication with X.509
-certificates. This has proven to be a difficult hurdle for most users
-to overcome. For typical EISCAT users the procedure described below
-should work.
+Access to data in DIRAC requires authentication. Two options are implemented: Certificate authentication and authentication with the EGI Checkin service.
+Certificate authentication is the most mature system and is described in the following.
+
+
 
 \begin{enumerate}
 
@@ -288,9 +289,6 @@ Once you have an installed certificate, VOMS group access, and an initialised DI
   \label{fig:catalogue}
 \end{figure}
 
-
-
-\label{sec:searching}
 \begin{figure}[htb]
   \centering
   \includegraphics[width=1.0\linewidth]{dirac-gui-search}
