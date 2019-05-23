@@ -8,6 +8,7 @@
 *.log
 *.out
 *.toc
+auto/
 
 # Ignore Emacs backups
 *~
