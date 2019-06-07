@@ -25,19 +25,24 @@
 EGI (\url{http://www.egi.eu}) is a federated e-Infrastructure set up
 to provide advanced computing services for research and innovation.
 The Horizon 2020 EINFRA-1-2014 project EGI-Engage supported a number
-of competence centres (CC) for research infrastructures. In this
-framework the CC for \etd{} started to develop a user data search and
-analysis portal for \etd{}. Services developed by EGI, as well as the
-related Horizon 2010 projects Indigo DataCloud and EUDAT
-\url{http://www.eudat.eu}, are now part of the European Open Science
-Cloud Hub (EOSC-Hub), \url{http://www.eosc-hub.eu}, a currently
-running project funded by the Horizon 2020 research and innovation
-programme under grant agreement No~777536.
+of competence centres (CCs) for research infrastructures. In this
+framework, the CC for \etd{} started to develop a data search and
+analysis portal for the future users of \etd{}.
 
-The development initiated in the EGI-Engage CC is continued in the EOSC-Hub CC for \etd{}. Partners are EISCAT HQ, Sweden, CNRS-IN2P3, France, and CSC in Finland.
+Several services developed by EGI, as well as the related Horizon 2010
+projects Indigo DataCloud and EUDAT \url{http://www.eudat.eu}, are now
+part of the European Open Science Cloud Hub (EOSC-Hub),
+\url{http://www.eosc-hub.eu}, a currently running project funded by
+the Horizon 2020 research and innovation programme under grant
+agreement No~777536.
+
+Thus, the development initiated in the EGI-Engage CC is continued in
+the EOSC-Hub CC for \etd{}. Partners in this project are EISCAT HQ,
+Sweden, CNRS-IN2P3, France, and CSC in Finland.
 
 \subsection{DIRAC}
 \label{sec:dirac}
+
 The \etd{} competence centre aims at developing the \etd{} user
 portal, which is to be the primary interface through which users will
 browse, download and analyse \etd{} data.  We chose to work closely
@@ -47,9 +52,16 @@ originally developed for distributing data from the LHCb project at
 CERN. DIRAC is an interware, mostly written in Python, that provides
 command-line, web and API interfaces to grid computing and storage
 resources. The major task of the \etd{} CC so far has been to
-implement a prototype DIRAC portal for legacy EISCAT data,
-i.e. archived lag profile data in Matlab format. These data are stored
+implement a prototype DIRAC portal for legacy EISCAT data, i.e. lag
+profile data (time-averaged spectral data in the autocorrelation
+domain). These data are stored in a Matlab version 4 compatible format
 at EISCAT HQ and indexed in a MySQL database.
+
+
+Detailed user and administrator instructions for DIRAC can be found at
+\url{https://dirac.readthedocs.io/en/latest/UserGuide/index.html}. It
+is highly recommended to read the user instructions carefully to
+obtain a good understanding of what DIRAC can do.
 
 \subsection{Layout of the EISCAT DIRAC service}
 \label{sec:eiscat-dirac}
@@ -69,16 +81,23 @@ resources at CSC.
   at Cesnet, accessible to VOMS managers through a web GUI at
   \url{https://perun.cesnet.cz}
 
-\item[Storage element] Access to storage in DIRAC is handled by the storage element server. This is a Python program that runs on server at EISCAT Headquarters. It reads
-  and serves data files from a top level directory, where presently data from 1981--1983, 2007 (IPY) and 2011--2019 are linked from the main storage server.
+\item[Storage element] Access to storage in DIRAC is handled by the
+  storage element (SE) server. This is a Python program and this
+  project uses an instance that runs on server at EISCAT
+  Headquarters. It reads and serves data files from a top level
+  directory, where presently data directories from 1981--1983, 2007
+  (IPY) and 2011--2019 are linked from the main storage server.
 
 \item[File catalogue] This is a database of files available on the storage element, and their metadata.  It runs on EGI resources at Cyfronet
   (\url{http://www.cyfronet.krakow.pl}) and allows users
   to list and search the data with a command-line client and the file
   catalogue application in the web portal.  
 
-  The file catalogue is updated by a Python script that runs monthly (from cron) on
-  the DIRAC server at EISCAT Headquarters.
+  The file catalogue is updated by a Python script that runs monthly
+  (from cron) on the DIRAC server at EISCAT Headquarters. This script
+  reads metadata from the MySQL database at EISCAT, as available at
+  \url{https://www.eiscat.se/schedule/schedule.cgi} by selecting
+  Archived data.
 
 \item[Web interface] A web interface is the main point of access for
   users. It also runs at Cyfronet and is accessible at
@@ -103,9 +122,13 @@ Access to data in DIRAC requires user authentication and access
 authorization through membership in one ore more groups in the Virtual
 Organisation (VO) eiscat.se.
 
-
-For user authentication two options are implemented: X.509 certificate authentication and authentication with the EGI Checkin service.
-Certificate authentication is the most mature system. However, it has turned out to be unknown to most EISCAT users and thus a detailed description follows. For instructions on EGI Checkin authentication, skip to Sect.~\ref{sec:checkin-auth} below.
+For user authentication two options are implemented: X.509 certificate
+authentication and authentication with the EGI Checkin service.
+Certificate authentication is the most mature system. However, this has
+turned out to be unknown to most EISCAT users, even those who in
+principle have access to certificate authorities, and thus a detailed
+description follows here. For instructions on EGI Checkin authentication,
+skip to Sect.~\ref{sec:checkin-auth} below.
 
 
 \subsection{Certificate authentication}
@@ -124,7 +147,8 @@ Skip this section if you already have a Grid Premium type X.509 certificate. In 
   in the Nordic region, this is usually Digicert. Browse to
   \url{https://www.digicert.com/sso/} using a compliant
   browser. Firefox, MS Internet Explorer and Safari should all work,
-  but to my best experience Google Chrome and MS Edge are not compatible. 
+  but Google Chrome and MS Edge were not compatible when last tried
+  (this may change).
 
   On the first page shown you will have to type in the name of your
   identity provider, i.e. your university or
@@ -286,8 +310,27 @@ Checking for DNs /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Ca
 \end{figure}
 
 
+To connect to the web GUI, browse to
+\url{https://dirac.egi.eu:9443/DIRAC/}. The browser may ask you to use
+the installed certificate. If not, click the label ``Visitor'' at the
+bottom left and choose certificate authentication.
+
+
 \subsection{EGI Checkin authentication}
 \label{sec:checkin-auth}
+
+It has turned out that the project needs an optional authentication
+mechanism to account for users who do not have access to certificates
+or work outside Europe. EOSC-Hub offers three options, originating from EGI (Checkin), EUDAT (B2ACCESS) and Indigo (IAM) respectively. These can all work with several identity providers, and we chose EGI Checkin for the DIRAC portal. This type of authentication has now been implemented.
+
+To authenticate with EGI Checkin, follow these simple steps:
+
+\begin{enumerate}
+  
+\item Connect to the EISCAT DIRAC portal at
+  \url{https://dirac.egi.eu:9443/DIRAC/}. If you don't have a
+  certificate, the login selector in the lower right corner will show
+  ``Visitor''.
 
 \begin{figure}[htb]
   \centering
@@ -296,6 +339,12 @@ Checking for DNs /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Ca
   \label{fig:checkin}
 \end{figure}
 
+  
+\item Select the EGI Checkin login option, as shown in Fig.~\ref{fig:checkin}.
+Checkin will allow you to select an identity provider, which handles the actual login. Options include EduGAIN and social media accounts.
+
+\item The identity provider will send the credentials back to Checkin,
+  and you will have to accept this.
 
 \begin{figure}[htb]
   \centering
@@ -304,23 +353,26 @@ Checking for DNs /DC=org/DC=terena/DC=tcs/C=SE/O=Institutet foer rymdfysik/CN=Ca
   \label{fig:checkin}
 \end{figure}
 
-\begin{figure}[htb]
-  \centering
-  \includegraphics[width=0.5\linewidth]{dirac-gui-checkin-ok}
-  \caption{Using the EGI Checkin login option in the DIRAC Web GUI. After a successful login the lower right text will change from ``Visitor'' to ``EGI Production'' and the user can select access groups in which membership has been granted.}
-  \label{fig:checkin-succeeded}
-\end{figure}
+\end{enumerate}
 
 
 \section{Searching EISCAT data}
 \label{sec:searching}
 
-Once authenticated you can start using the web GUI.
+Once authenticated you can start using the web GUI. The text ``Visitor'' should now have changed to ``EGI Production'', and selectors for user name(s) and granted VOMS access groups will appear, as shown in Fig.~\ref{fig:checkin-succeeded}.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.5\linewidth]{dirac-gui-checkin-ok}
+  \caption{Successfully logged in to the DIRAC portal. The lower right text will change from ``Visitor'' to ``EGI Production'' and the user can select access groups in which membership has been granted.}
+  \label{fig:checkin-succeeded}
+\end{figure}
+
+The point of start in the portal is the file catalogue GUI. To access it:
 
 \begin{enumerate}
-\item Go to the prototype portal at \url{http://dirac.egi.eu:8090/DIRAC/}
-\item Select \texttt{Secure connection} at the \texttt{bottom right.} The browser may ask you to select certificate once or twice.
-\item Select your VOMS group at the bottom right, e.g. \texttt{eiscat\_FI}
+\item Connect and authenticate as described
+\item Select your VOMS group, such as \texttt{eiscat\_SE}
 \item Go to the Windows style menu at the bottom left and browse to the file catalogue GUI. 
 \end{enumerate}
 
@@ -367,27 +419,32 @@ Fig.~\ref{fig:download}.
   \label{fig:download}
 \end{figure}
 
-\section{RTG plotting of EISCAT data files}
+\section{Submitting user analysis jobs}
 \label{sec:rtg}
 
-The GUI can also submit processing jobs to the EGI grid. This procedure will usually
+\subsection{Using the Job Launchpad GUI}
+\label{sec:using-job-launchpad}
+
+The GUI can also submit processing jobs. This procedure will essentially
 
 \begin{enumerate}
-\item start a virtual machine on grid resources
+\item start a pilot job on the compute resources
 
-\item run the specified software with the selected files as input. At
-  this stage the standard EISCAT Real Time Graph (RTG) has been
-  implemented and will plot the content of the selected data files (by
-  running the RTG script on the open source Matlab-compatible software
-  Octave).
-
+\item the pilot job downloads and runs the specified software with the
+  selected files as input.
 \end{enumerate}
 
-The procedure is as follows
+At this stage the standard EISCAT Real Time Graph (RTG) has been
+implemented and will plot the content of the selected data files (by
+running the RTG script on the open source Matlab-compatible software
+Octave).
+
+
+The Job Launchpad is a separate application in the GUI, but it can also be accessed from the file catalogue as follows:
 \begin{enumerate}
-\item Select files as for download
+\item Select files in the same way as for download
 \item Click the green job launchpad icon above the file list
-\item The job launchpad GUI opens. Right-click on the \texttt{EISCAT png maker} directory icon and select \texttt{Apply to the selected parameters}. See Fig.~\ref{fig:submit}.
+\item The job launchpad GUI should open. Right-click on the \texttt{EISCAT png maker} directory icon and select \texttt{Apply to the selected parameters}. See Fig.~\ref{fig:submit}.
 The field \texttt{Executable} should now show the path to \texttt{webtg4dirac}.
 \item Check the other parameters as well and click Submit at the bottom of the job launchpad window.
 \item Go to the main menu and browse to the job monitor (Fig.~\ref{fig:monitor}). Make sure that your user name is preselected and click Submit to see the status of the job.
@@ -415,6 +472,43 @@ The field \texttt{Executable} should now show the path to \texttt{webtg4dirac}.
   \caption{The sandbox contains the output files for download.}
   \label{fig:sandbox}
 \end{figure}
+
+\subsection{Using the CLI}
+\label{sec:using-cli}
+
+Jobs can also be submitted from the DIRAC command line. For this, a job description file has to be written and submitted. A typical job description file has this format, known as JDL (Job Description Language):
+
+\begin{verbatim}
+ 
+[
+      Executable = "run_rtg_docker.sh";
+      Arguments = "";
+      JobName = "my_job_name_string";
+      Site = "Cloud.CSC.fi";
+      CPUTime = 86400;
+      InputSandbox = {"run_rtg_docker.sh",
+            "LFN:/eiscat.se/archive/yyyy/experiment/file1",
+            "LFN:/eiscat.se/archive/yyyy/experiment/file2",
+            ...
+           }
+      OutputSandbox = {"output/*"};
+    ]
+
+
+  
+\end{verbatim}
+
+The principle of job submission through the CLI is thus:
+
+\begin{description}
+\item Edit and save a JDL file for your analysis case, e.g. \verb+my_job.jdl+.
+  
+\item Submit the job: \verb+dirac-wms-job-submit my_job.jdl+
+
+\end{description}
+
+For further instructions, please refer to the instructions at
+\url{https://dirac.readthedocs.io/en/latest/UserGuide/index.html}
 
 \section{Feedback}
 \label{sec:feedback}
