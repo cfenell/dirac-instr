@@ -479,8 +479,7 @@ The field \texttt{Executable} should now show the path to \texttt{webtg4dirac}.
 Jobs can also be submitted from the DIRAC command line. For this, a job description file has to be written and submitted. A typical job description file has this format, known as JDL (Job Description Language):
 
 \begin{verbatim}
- 
-[
+    [
       Executable = "run_rtg_docker.sh";
       Arguments = "";
       JobName = "my_job_name_string";
@@ -492,10 +491,7 @@ Jobs can also be submitted from the DIRAC command line. For this, a job descript
             ...
            }
       OutputSandbox = {"output/*"};
-    ]
-
-
-  
+    ]  
 \end{verbatim}
 
 The principle of job submission through the CLI is thus:
